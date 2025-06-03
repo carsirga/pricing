@@ -1,8 +1,9 @@
 package com.inditex.pricing.application.service;
 
-import com.inditex.pricing.dto.PriceResponseDTO;
+import com.inditex.pricing.domain.port.in.PriceUseCase;
+import com.inditex.pricing.shared.dto.PriceResponseDTO;
 import com.inditex.pricing.domain.exception.PriceNotFoundException;
-import com.inditex.pricing.infrastructure.repository.PriceRepository;
+import com.inditex.pricing.domain.port.out.PriceRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
  * This class orchestrates the domain logic for price retrieval without applying business rules itself.
  */
 @Service
-public class PriceServiceImpl implements com.inditex.pricing.application.service.PriceService {
+public class PriceServiceImpl implements PriceUseCase {
 
     private final PriceRepository repository;
 

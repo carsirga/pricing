@@ -1,16 +1,15 @@
-package com.inditex.pricing.application.service;
+package com.inditex.pricing.domain.port.in;
 
-import com.inditex.pricing.dto.PriceResponseDTO;
+import com.inditex.pricing.shared.dto.PriceResponseDTO;
 
 import java.time.LocalDateTime;
 
 /**
  * Application service interface for retrieving the applicable price
  * based on the date, product ID, and brand ID.
- *
  * This interface defines the contract for the main use case of price selection.
  */
-public interface PriceService {
+public interface PriceUseCase {
 
     /**
      * Returns the applicable price for the given date, product, and brand.

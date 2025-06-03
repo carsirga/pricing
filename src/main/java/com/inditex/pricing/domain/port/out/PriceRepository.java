@@ -1,4 +1,4 @@
-package com.inditex.pricing.infrastructure.repository;
+package com.inditex.pricing.domain.port.out;
 
 import com.inditex.pricing.domain.model.Price;
 import org.springframework.data.jpa.repository.JpaRepository;

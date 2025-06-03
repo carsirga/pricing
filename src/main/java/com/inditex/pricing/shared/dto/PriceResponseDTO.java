@@ -1,4 +1,4 @@
-package com.inditex.pricing.dto;
+package com.inditex.pricing.shared.dto;
 
 import com.inditex.pricing.domain.model.Price;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
-package com.inditex.pricing.infrastructure.controller;
+package com.inditex.pricing.infrastructure.adapter.in.rest;
 
-import com.inditex.pricing.application.service.PriceService;
-import com.inditex.pricing.dto.PriceResponseDTO;
+import com.inditex.pricing.domain.port.in.PriceUseCase;
+import com.inditex.pricing.shared.dto.PriceResponseDTO;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
 @RequestMapping("/api/prices")
 public class PriceController {
 
-    private final PriceService priceService;
+    private final PriceUseCase priceService;
 
-    public PriceController(PriceService priceService) {
+    public PriceController(PriceUseCase priceService) {
         this.priceService = priceService;
     }
 
