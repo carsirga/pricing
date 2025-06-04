@@ -1,5 +1,6 @@
 package com.inditex.pricing.application.service;
 
+import com.inditex.pricing.domain.model.Price;
 import com.inditex.pricing.domain.port.in.PriceUseCase;
 import com.inditex.pricing.domain.service.PriceDomainService;
 import com.inditex.pricing.shared.dto.PriceResponseDTO;
@@ -8,6 +9,7 @@ import com.inditex.pricing.domain.port.out.PriceRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Application service for the use case of retrieving applicable price.
@@ -38,11 +40,8 @@ public class PriceServiceImpl implements PriceUseCase {
 
     @Override
     public PriceResponseDTO getApplicablePrice(LocalDateTime date, int productId, int brandId) {
-        var prices = repository.findValidPrices(date, productId, brandId);
-        var selected = domainService.selectHighestPriorityPrice(prices);
-        if (selected == null) {
-            throw new PriceNotFoundException(date, productId, brandId);
-        }
-        return PriceResponseDTO.fromEntity(selected);
+        return repository.findTopValidPrice(date, productId, brandId)
+                .map(PriceResponseDTO::fromEntity)
+                .orElseThrow(() -> new PriceNotFoundException(date, productId, brandId));
     }
 }
