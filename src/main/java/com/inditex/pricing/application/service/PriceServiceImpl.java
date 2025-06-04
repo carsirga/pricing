@@ -1,6 +1,7 @@
 package com.inditex.pricing.application.service;
 
 import com.inditex.pricing.domain.port.in.PriceUseCase;
+import com.inditex.pricing.domain.service.PriceDomainService;
 import com.inditex.pricing.shared.dto.PriceResponseDTO;
 import com.inditex.pricing.domain.exception.PriceNotFoundException;
 import com.inditex.pricing.domain.port.out.PriceRepository;
@@ -18,8 +19,11 @@ public class PriceServiceImpl implements PriceUseCase {
 
     private final PriceRepository repository;
 
-    public PriceServiceImpl(PriceRepository repository) {
+    private final PriceDomainService domainService;
+
+    public PriceServiceImpl(PriceRepository repository, PriceDomainService domainService) {
         this.repository = repository;
+        this.domainService = domainService;
     }
 
     /**
@@ -31,11 +35,14 @@ public class PriceServiceImpl implements PriceUseCase {
      * @return the applicable price as a DTO
      * @throws PriceNotFoundException if no valid price is found
      */
+
     @Override
     public PriceResponseDTO getApplicablePrice(LocalDateTime date, int productId, int brandId) {
-        return repository.findValidPrices(date, productId, brandId).stream()
-                .findFirst()
-                .map(PriceResponseDTO::fromEntity)
-                .orElseThrow(() -> new PriceNotFoundException(date, productId, brandId));
+        var prices = repository.findValidPrices(date, productId, brandId);
+        var selected = domainService.selectHighestPriorityPrice(prices);
+        if (selected == null) {
+            throw new PriceNotFoundException(date, productId, brandId);
+        }
+        return PriceResponseDTO.fromEntity(selected);
     }
 }
