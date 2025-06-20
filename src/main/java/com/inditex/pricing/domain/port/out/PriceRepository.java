@@ -1,42 +1,22 @@
 package com.inditex.pricing.domain.port.out;
 
-import com.inditex.pricing.domain.model.Price;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import com.inditex.pricing.domain.model.Price;
+
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Repository for accessing Price entities from the database.
- *
- * Provides a custom query to retrieve valid prices based on brand, product, and a specific date.
+ * Output port for accessing price data from a data source (e.g., database).
+ * Used by application services to retrieve price information.
  */
-@Repository
-public interface PriceRepository extends JpaRepository<Price, Long> {
+public interface PriceRepository {
 
     /**
-     * Finds applicable prices for a given product, brand and date.
-     * Results are ordered by priority descending to allow picking the highest priority one.
+     * Retrieves a list of prices for a specific brand and product.
      *
-     * @param date the date and time for which the price is being queried
-     * @param productId the ID of the product
-     * @param brandId the ID of the brand
-     * @return a list of valid prices ordered by priority descending
+     * @param brandId   the ID of the brand.
+     * @param productId the ID of the product.
+     * @return a list of {@link Price} objects that match the criteria.
      */
-    @Query("""
-       SELECT p FROM Price p 
-       WHERE p.brandId = :brandId 
-         AND p.productId = :productId 
-         AND :date BETWEEN p.startDate AND p.endDate 
-       ORDER BY p.priority DESC
-       """)
-    Optional<Price> findTopValidPrice(
-            @Param("date") LocalDateTime date,
-            @Param("productId") int productId,
-            @Param("brandId") int brandId
-    );
+    List<Price> findPricesByBrandIdAndProductId(Long brandId, Long productId);
 }

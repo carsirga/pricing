@@ -1,36 +1,42 @@
 package com.inditex.pricing.domain.service;
 
-import com.inditex.pricing.domain.model.Price;
-import org.springframework.stereotype.Component;
 
+import com.inditex.pricing.domain.model.Price;
+
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Domain service responsible for encapsulating the business logic
- * of selecting the applicable price from a list of valid prices.
- *
- * This service ensures that domain rules (such as prioritizing prices)
- * are centralized and independent of application or infrastructure layers.
- *
- * In the current implementation, it simply returns the first price in the list,
- * assuming the list is pre-sorted by priority. If no prices are available, it returns null.
+ * Domain service responsible for applying business rules related to prices.
  */
-@Component
 public class PriceDomainService {
 
     /**
-     * Selects the applicable price from a list of valid prices.
+     * Filters the list of prices to find the applicable one for a given date and time.
+     * The applicable price is the one whose start and end dates cover the requested date,
+     * and among them, the one with the highest priority.
      *
-     * The list is expected to be sorted by priority (e.g., descending),
-     * so this method will return the first valid price or null if the list is empty.
-     *
-     * @param prices a list of valid price candidates (pre-filtered and sorted)
-     * @return the selected applicable {@link Price}, or null if none are available
+     * @param prices           the list of candidate prices.
+     * @param applicationDate  the date to filter prices by.
+     * @return an {@link Optional} containing the applicable {@link Price}, if found.
      */
-
-    public Price selectHighestPriorityPrice(List<Price> prices) {
+    public Optional<Price> filterPricesByDateAndPriority(List<Price> prices, LocalDateTime applicationDate) {
         return prices.stream()
-                .findFirst()
-                .orElse(null);
+                .filter(price -> isDateWithinRange(applicationDate, price))
+                .max(Comparator.comparingInt(Price::getPriority));
+    }
+
+    /**
+     * Checks if the given date is within the validity period of the price.
+     *
+     * @param date  the date to check.
+     * @param price the price to check against.
+     * @return true if the date is within startDate and endDate (inclusive), false otherwise.
+     */
+    private boolean isDateWithinRange(LocalDateTime date, Price price) {
+        return (date.isEqual(price.getStartDate()) || date.isAfter(price.getStartDate()))
+                && (date.isBefore(price.getEndDate()) || date.isEqual(price.getEndDate()));
     }
 }

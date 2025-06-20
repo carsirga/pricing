@@ -5,19 +5,18 @@ import com.inditex.pricing.shared.dto.PriceResponseDTO;
 import java.time.LocalDateTime;
 
 /**
- * Application service interface for retrieving the applicable price
- * based on the date, product ID, and brand ID.
- * This interface defines the contract for the main use case of price selection.
+ * Use case interface for retrieving applicable prices.
+ * Acts as the input port in a hexagonal (or clean) architecture.
  */
 public interface PriceUseCase {
 
     /**
-     * Returns the applicable price for the given date, product, and brand.
+     * Finds the applicable price for a given product and brand at a specific date.
      *
-     * @param date      the date and time of the price request
-     * @param productId the ID of the product
-     * @param brandId   the ID of the brand
-     * @return the applicable price as a response DTO
+     * @param productId       the ID of the product.
+     * @param brandId         the ID of the brand.
+     * @param applicationDate the date and time when the price should be applied.
+     * @return the applicable price in a {@link PriceResponseDTO}.
      */
-    PriceResponseDTO getApplicablePrice(LocalDateTime date, int productId, int brandId);
+    PriceResponseDTO findApplicablePrice(Long productId, Long brandId, LocalDateTime applicationDate);
 }
