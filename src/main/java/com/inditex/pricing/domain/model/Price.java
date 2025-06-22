@@ -43,7 +43,7 @@ public class Price {
     private Integer priority;
 
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
-    private BigDecimal price;
+    private BigDecimal amount;
 
     @Column(name = "curr", nullable = false, length = 3)
     private String curr;

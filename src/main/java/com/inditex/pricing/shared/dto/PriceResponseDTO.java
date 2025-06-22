@@ -39,7 +39,7 @@ public class PriceResponseDTO {
                 price.getPriceList(),
                 price.getStartDate(),
                 price.getEndDate(),
-                price.getPrice()
+                price.getAmount()
         );
     }
 }

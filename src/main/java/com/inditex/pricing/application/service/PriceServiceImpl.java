@@ -53,7 +53,7 @@ public class PriceServiceImpl implements PriceUseCase {
                 applicablePrice.getPriceList(),
                 applicablePrice.getStartDate(),
                 applicablePrice.getEndDate(),
-                applicablePrice.getPrice()
+                applicablePrice.getAmount()
         );
     }
 }
