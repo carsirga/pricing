@@ -2,6 +2,7 @@ package com.inditex.pricing.domain.service;
 
 
 import com.inditex.pricing.domain.model.Price;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import java.util.Optional;
 /**
  * Domain service responsible for applying business rules related to prices.
  */
+@Service
 public class PriceDomainService {
 
     /**
