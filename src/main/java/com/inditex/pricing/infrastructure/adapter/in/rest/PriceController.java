@@ -45,8 +45,8 @@ public class PriceController {
     public ResponseEntity<PriceResponseDTO> getApplicablePrice(
             @RequestParam(name = "productId") Long productId,
             @RequestParam(name = "brandId") Long brandId,
-            @RequestParam(name = "date")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+            @RequestParam(name = "date") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+            LocalDateTime date) {
 
         log.info("Request received to find applicable price. ProductId: {}, BrandId: {}, Date: {}", productId, brandId, date);
 
