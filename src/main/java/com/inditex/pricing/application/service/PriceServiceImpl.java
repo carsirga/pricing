@@ -1,40 +1,59 @@
 package com.inditex.pricing.application.service;
-
-import com.inditex.pricing.dto.PriceResponseDTO;
 import com.inditex.pricing.domain.exception.PriceNotFoundException;
-import com.inditex.pricing.infrastructure.repository.PriceRepository;
+import com.inditex.pricing.domain.model.Price;
+import com.inditex.pricing.domain.port.in.PriceUseCase;
+import com.inditex.pricing.domain.port.out.PriceRepository;
+import com.inditex.pricing.domain.service.PriceDomainService;
+import com.inditex.pricing.shared.dto.PriceResponseDTO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * Application service for the use case of retrieving applicable price.
- *
- * This class orchestrates the domain logic for price retrieval without applying business rules itself.
+ * Implementation of the {@link PriceUseCase} interface.
+ * Provides the logic to find the applicable price for a product and brand at a specific time.
  */
 @Service
-public class PriceServiceImpl implements com.inditex.pricing.application.service.PriceService {
+@RequiredArgsConstructor
+@Slf4j
+public class PriceServiceImpl implements PriceUseCase {
 
-    private final PriceRepository repository;
-
-    public PriceServiceImpl(PriceRepository repository) {
-        this.repository = repository;
-    }
+    private final PriceRepository priceRepository;
+    private final PriceDomainService priceDomainService;
 
     /**
-     * Retrieves the highest-priority valid price for a given product, brand, and date.
+     * Finds the applicable price for a product and brand at the given date.
      *
-     * @param date      the application date to check
-     * @param productId the product identifier
-     * @param brandId   the brand identifier
-     * @return the applicable price as a DTO
-     * @throws PriceNotFoundException if no valid price is found
+     * @param productId the product ID.
+     * @param brandId the brand ID.
+     * @param applicationDate the date and time for which the price is needed.
+     * @return the applicable price as a {@link PriceResponseDTO}.
+     * @throws PriceNotFoundException if no applicable price is found.
      */
     @Override
-    public PriceResponseDTO getApplicablePrice(LocalDateTime date, int productId, int brandId) {
-        return repository.findValidPrices(date, productId, brandId).stream()
-                .findFirst()
-                .map(PriceResponseDTO::fromEntity)
-                .orElseThrow(() -> new PriceNotFoundException(date, productId, brandId));
+    public PriceResponseDTO findApplicablePrice(Long productId, Long brandId, LocalDateTime applicationDate) {
+        log.debug("Searching prices for productId={}, brandId={}, applicationDate={}", productId, brandId, applicationDate);
+
+        List<Price> prices = priceRepository.findByBrandIdAndProductId(brandId, productId);
+
+        Price applicablePrice = priceDomainService.filterPricesByDateAndPriority(prices, applicationDate)
+                .orElseThrow(() -> {
+                    log.warn("No applicable price found for productId={}, brandId={}, applicationDate={}", productId, brandId, applicationDate);
+                    return new PriceNotFoundException("No applicable price found");
+                });
+
+        log.info("Applicable price found: {}", applicablePrice);
+
+        return new PriceResponseDTO(
+                applicablePrice.getProductId(),
+                applicablePrice.getBrandId(),
+                applicablePrice.getPriceList(),
+                applicablePrice.getStartDate(),
+                applicablePrice.getEndDate(),
+                applicablePrice.getAmount()
+        );
     }
 }
