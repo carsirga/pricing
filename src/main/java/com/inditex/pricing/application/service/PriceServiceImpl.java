@@ -37,7 +37,7 @@ public class PriceServiceImpl implements PriceUseCase {
     public PriceResponseDTO findApplicablePrice(Long productId, Long brandId, LocalDateTime applicationDate) {
         log.debug("Searching prices for productId={}, brandId={}, applicationDate={}", productId, brandId, applicationDate);
 
-        List<Price> prices = priceRepository.findPricesByBrandIdAndProductId(brandId, productId);
+        List<Price> prices = priceRepository.findByBrandIdAndProductId(brandId, productId);
 
         Price applicablePrice = priceDomainService.filterPricesByDateAndPriority(prices, applicationDate)
                 .orElseThrow(() -> {
